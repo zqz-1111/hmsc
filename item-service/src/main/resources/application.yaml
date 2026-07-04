@@ -5,6 +5,9 @@ spring:
     name: item-service
   profiles:
     active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.188.130:8848
   datasource:
     url: jdbc:mysql://${hm.db.host}:3306/hm-item?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
