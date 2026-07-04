@@ -5,6 +5,9 @@ spring:
     name: cart-service
   profiles:
     active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.188.130:8848
   datasource:
     url: jdbc:mysql://${hm.db.host}:3306/hm-cart?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,6 +20,9 @@ mybatis-plus:
     db-config:
       update-strategy: not_null
       id-type: auto
+feign:
+  okhttp:
+    enabled: true # 开启OKHttp功能
 logging:
   level:
     com.hmall: debug
