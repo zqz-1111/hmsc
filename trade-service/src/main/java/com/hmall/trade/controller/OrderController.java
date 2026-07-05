@@ -6,7 +6,6 @@ import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.vo.OrderVO;
 import com.hmall.trade.service.IOrderService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +31,6 @@ public class OrderController {
     }
 
     @ApiOperation("标记订单已支付")
-    @ApiImplicitParam(name = "orderId", value = "订单id", paramType = "path")
     @PutMapping("/{orderId}")
     public void markOrderPaySuccess(@PathVariable("orderId") Long orderId) {
         orderService.markOrderPaySuccess(orderId);

@@ -9,12 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>item-service</artifactId>
+    <artifactId>pay-service</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
     <dependencies>
         <!--common-->
         <dependency>
@@ -47,11 +48,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!--单元测试-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
     </dependencies>
     <build>
