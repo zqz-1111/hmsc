@@ -55,10 +55,15 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             return response.setComplete();
         }
 
-        // TODO 5.如果有效，传递用户信息
-        System.out.println("userId = " + userId);
+        // 5.如果有效，传递用户信息到请求头
+        ServerHttpRequest newRequest = request.mutate()
+                .header("user-info", userId.toString())
+                .build();
+        ServerWebExchange newExchange = exchange.mutate()
+                .request(newRequest)
+                .build();
         // 6.放行
-        return chain.filter(exchange);
+        return chain.filter(newExchange);
     }
 
     private boolean isExclude(String antPath) {
