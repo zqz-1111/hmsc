@@ -1,5 +1,8 @@
 server:
   port: 8086
+feign:
+  sentinel:
+    enabled: true # 开启feign对sentinel的支持
 spring:
   application:
     name: pay-service
@@ -13,6 +16,9 @@ spring:
   cloud:
     nacos:
       server-addr: 192.168.188.130:8848
+  # 开启feign对sentinel的支持
+  sentinel:
+    enabled: true
 mybatis-plus:
   configuration:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler

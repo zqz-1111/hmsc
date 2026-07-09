@@ -1,5 +1,8 @@
 server:
   port: 8084
+feign:
+  sentinel:
+    enabled: true # 开启feign对sentinel的支持
 spring:
   application:
     name: user-service # 服务名称
