@@ -75,11 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         detailService.saveBatch(details);
 
         // 3.扣减库存
-        try {
-            itemClient.deductStock(detailDTOS);
-        } catch (Exception e) {
-            throw new RuntimeException("库存不足！");
-        }
+        itemClient.deductStock(detailDTOS);
 
         // 4.清理购物车商品
         cartClient.deleteCartItemByIds(itemIds);
