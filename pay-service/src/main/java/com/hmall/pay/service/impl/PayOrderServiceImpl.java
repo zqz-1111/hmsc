@@ -16,7 +16,7 @@ import com.hmall.pay.mapper.PayOrderMapper;
 import com.hmall.pay.service.IPayOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.seata.spring.annotation.GlobalTransactional;
 
 import java.time.LocalDateTime;
 
@@ -43,7 +43,7 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
     }
 
     @Override
-    @Transactional
+    @GlobalTransactional
     public void tryPayOrderByBalance(PayOrderFormDTO payOrderDTO) {
         // 1.查询支付单
         PayOrder po = getById(payOrderDTO.getId());
