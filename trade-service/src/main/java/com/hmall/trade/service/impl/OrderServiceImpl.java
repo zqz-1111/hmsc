@@ -5,6 +5,7 @@ import com.hmall.api.client.CartClient;
 import com.hmall.api.client.ItemClient;
 import com.hmall.api.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
+import com.hmall.api.mq.OrderMessage;
 import com.hmall.common.exception.BadRequestException;
 import com.hmall.common.utils.UserContext;
 
@@ -15,6 +16,8 @@ import com.hmall.trade.mapper.OrderMapper;
 import com.hmall.trade.service.IOrderDetailService;
 import com.hmall.trade.service.IOrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import io.seata.spring.annotation.GlobalTransactional;
 
@@ -40,6 +43,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final ItemClient itemClient;
     private final IOrderDetailService detailService;
     private final CartClient cartClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     @GlobalTransactional
@@ -77,8 +81,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 3.扣减库存
         itemClient.deductStock(detailDTOS);
 
-        // 4.清理购物车商品
-        cartClient.deleteCartItemByIds(itemIds);
+        // 4.清理购物车商品 - 基于RabbitMQ异步通知
+        // cartClient.deleteCartItemByIds(itemIds);
+        OrderMessage orderMessage = new OrderMessage();
+        orderMessage.setItemIds(new ArrayList<>(itemIds));
+        // userId由MqConfig自动写入消息Header，无需手动设置
+        rabbitTemplate.convertAndSend("trade.topic", "order.create", orderMessage);
         return order.getId();
     }
 
