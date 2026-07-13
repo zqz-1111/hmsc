@@ -7,8 +7,10 @@ import com.hmall.api.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
 import com.hmall.api.mq.OrderMessage;
 import com.hmall.common.exception.BadRequestException;
+import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.UserContext;
 
+import com.hmall.trade.constants.MQConstants;
 import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.po.Order;
 import com.hmall.trade.domain.po.OrderDetail;
@@ -17,7 +19,7 @@ import com.hmall.trade.service.IOrderDetailService;
 import com.hmall.trade.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.hmall.common.utils.RabbitMqHelper;
 import org.springframework.stereotype.Service;
 import io.seata.spring.annotation.GlobalTransactional;
 
@@ -43,7 +45,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final ItemClient itemClient;
     private final IOrderDetailService detailService;
     private final CartClient cartClient;
-    private final RabbitTemplate rabbitTemplate;
+    private final RabbitMqHelper rabbitMqHelper;
 
     @Override
     @GlobalTransactional
@@ -86,7 +88,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         OrderMessage orderMessage = new OrderMessage();
         orderMessage.setItemIds(new ArrayList<>(itemIds));
         // userId由MqConfig自动写入消息Header，无需手动设置
-        rabbitTemplate.convertAndSend("trade.topic", "order.create", orderMessage);
+        rabbitMqHelper.sendMessage("trade.topic", "order.create", orderMessage);
+
+        // 5. 发送延迟消息，检测订单支付状态
+        rabbitMqHelper.sendDelayMessage(
+                MQConstants.DELAY_EXCHANGE_NAME,
+                MQConstants.DELAY_ORDER_KEY,
+                order.getId(),
+                15 * 60 * 1000
+        );
+
         return order.getId();
     }
 
@@ -97,6 +108,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setStatus(2);
         order.setPayTime(LocalDateTime.now());
         updateById(order);
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        // 1.查询订单
+        Order order = getById(orderId);
+        if (order == null || order.getStatus() != 1) {
+            return;
+        }
+        // 2.更新订单状态为取消
+        Order update = new Order();
+        update.setId(orderId);
+        update.setStatus(5);
+        update.setCloseTime(LocalDateTime.now());
+        updateById(update);
+
+        // 3.查询订单详情，恢复库存
+        List<OrderDetail> details = detailService.lambdaQuery()
+                .eq(OrderDetail::getOrderId, orderId)
+                .list();
+        List<OrderDetailDTO> detailDTOS = BeanUtils.copyList(details, OrderDetailDTO.class);
+        itemClient.restoreStock(detailDTOS);
     }
 
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {

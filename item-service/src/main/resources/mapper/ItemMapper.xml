@@ -6,4 +6,8 @@
         UPDATE item SET stock = stock - #{num} WHERE id = #{itemId}
     </update>
 
+    <update id="restoreStock">
+        UPDATE item SET stock = stock + #{num} WHERE id = #{itemId}
+    </update>
+
 </mapper>

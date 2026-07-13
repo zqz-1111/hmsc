@@ -15,4 +15,6 @@ import com.hmall.item.domain.po.Item;
 public interface ItemMapper extends BaseMapper<Item> {
 
     void updateStock(OrderDetailDTO orderDetail);
+
+    void restoreStock(OrderDetailDTO orderDetail);
 }

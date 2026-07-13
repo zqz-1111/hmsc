@@ -16,7 +16,7 @@ import com.hmall.pay.mapper.PayOrderMapper;
 import com.hmall.pay.service.IPayOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.hmall.common.utils.RabbitMqHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
 
     private final TradeClient tradeClient;
 
-    private final RabbitTemplate rabbitTemplate;
+    private final RabbitMqHelper rabbitMqHelper;
 
     @Override
     public String applyPayOrder(PayApplyDTO applyDTO) {
@@ -67,7 +67,7 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
         // 5.修改订单状态 - 基于RabbitMQ异步通知
         // tradeClient.markOrderPaySuccess(po.getBizOrderNo());
         try {
-            rabbitTemplate.convertAndSend("pay.direct", "pay.success", po.getBizOrderNo());
+            rabbitMqHelper.sendMessage("pay.direct", "pay.success", po.getBizOrderNo());
         } catch (Exception e) {
             log.error("支付成功的消息发送失败，支付单id：{}， 交易单id：{}", po.getId(), po.getBizOrderNo(), e);
         }

@@ -37,6 +37,13 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
     }
 
     @Override
+    public void restoreStock(List<OrderDetailDTO> items) {
+        for (OrderDetailDTO item : items) {
+            getBaseMapper().restoreStock(item);
+        }
+    }
+
+    @Override
     public List<ItemDTO> queryItemByIds(Collection<Long> ids) {
         return BeanUtils.copyList(listByIds(ids), ItemDTO.class);
     }

@@ -1,5 +1,6 @@
 package com.hmall.common.config;
 
+import com.hmall.common.utils.RabbitMqHelper;
 import com.hmall.common.utils.UserContext;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -19,6 +20,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(RabbitTemplate.class)
 public class MqConfig {
+
+    @Bean
+    public RabbitMqHelper rabbitMqHelper(RabbitTemplate rabbitTemplate) {
+        return new RabbitMqHelper(rabbitTemplate);
+    }
 
     /**
      * 生产者：发送消息前自动将UserContext用户信息写入Header
