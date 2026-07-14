@@ -1,4 +1,4 @@
-package com.hmall.item.domain.po;
+package com.hmall.search.domain.po;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

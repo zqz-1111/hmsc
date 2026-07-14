@@ -1,0 +1,9 @@
+server:
+  port: 8082
+hm:
+  swagger:
+    title: 搜索服务接口文档
+    package: com.hmall.search.controller
+  es:
+    host: 192.168.188.130
+    port: 9200

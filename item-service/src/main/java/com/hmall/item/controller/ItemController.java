@@ -1,13 +1,17 @@
 package com.hmall.item.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmall.common.domain.PageDTO;
 import com.hmall.common.domain.PageQuery;
 import com.hmall.common.utils.BeanUtils;
+import com.hmall.common.utils.RabbitMqHelper;
 import com.hmall.item.domain.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
 import com.hmall.item.domain.po.Item;
+import com.hmall.item.domain.po.ItemDoc;
 import com.hmall.item.service.IItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +27,11 @@ import java.util.List;
 public class ItemController {
 
     private final IItemService itemService;
+    private final RabbitMqHelper rabbitMqHelper;
+
+    private static final String EXCHANGE_NAME = "item.direct";
+    private static final String SAVE_KEY = "item.es.save";
+    private static final String DELETE_KEY = "item.es.delete";
 
     @ApiOperation("分页查询商品")
     @GetMapping("/page")
@@ -50,6 +59,9 @@ public class ItemController {
     public void saveItem(@RequestBody ItemDTO item) {
         // 新增
         itemService.save(BeanUtils.copyBean(item, Item.class));
+        // 发送MQ消息，同步ES（转JSON字符串避免序列化问题）
+        rabbitMqHelper.sendMessage(EXCHANGE_NAME, SAVE_KEY,
+                JSONUtil.toJsonStr(BeanUtil.copyProperties(item, ItemDoc.class)));
     }
 
     @ApiOperation("更新商品状态")
@@ -59,6 +71,10 @@ public class ItemController {
         item.setId(id);
         item.setStatus(status);
         itemService.updateById(item);
+        // 发送MQ消息，同步ES
+        Item updated = itemService.getById(id);
+        rabbitMqHelper.sendMessage(EXCHANGE_NAME, SAVE_KEY,
+                JSONUtil.toJsonStr(BeanUtil.copyProperties(updated, ItemDoc.class)));
     }
 
     @ApiOperation("更新商品")
@@ -68,12 +84,17 @@ public class ItemController {
         item.setStatus(null);
         // 更新
         itemService.updateById(BeanUtils.copyBean(item, Item.class));
+        // 发送MQ消息，同步ES
+        rabbitMqHelper.sendMessage(EXCHANGE_NAME, SAVE_KEY,
+                JSONUtil.toJsonStr(BeanUtil.copyProperties(item, ItemDoc.class)));
     }
 
     @ApiOperation("根据id删除商品")
     @DeleteMapping("{id}")
     public void deleteItemById(@PathVariable("id") Long id) {
         itemService.removeById(id);
+        // 发送MQ消息，同步ES
+        rabbitMqHelper.sendMessage(EXCHANGE_NAME, DELETE_KEY, id);
     }
 
     @ApiOperation("批量扣减库存")

@@ -18,6 +18,7 @@
         <module>trade-service</module>
         <module>pay-service</module>
         <module>hm-gateway</module>
+        <module>search-service</module>
     </modules>
 
     <parent>
@@ -32,7 +33,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <org.projectlombok.version>1.18.20</org.projectlombok.version>
+        <org.projectlombok.version>1.18.36</org.projectlombok.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <mybatis-plus.version>3.4.3</mybatis-plus.version>
@@ -104,6 +105,13 @@
                     <configuration>
                         <source>11</source> <!-- depending on your project -->
                         <target>11</target> <!-- depending on your project -->
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.36</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
             </plugins>

@@ -4,7 +4,6 @@ package com.hmall.common.utils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -96,6 +95,7 @@ public class WebUtils {
      * @param queries
      * @return
      */
+    @SuppressWarnings("unchecked")
     public  static <T> String getParameters(final Map<String, T> queries) {
         StringBuilder buffer = new StringBuilder();
         for (Map.Entry<String, T> entry : queries.entrySet()) {
@@ -118,7 +118,7 @@ public class WebUtils {
      * @return
      */
     public static String getUri(String url){
-        if(StringUtils.isEmpty(url)) {
+        if(StrUtil.isBlank(url)) {
             return null;
         }
 

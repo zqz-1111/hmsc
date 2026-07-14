@@ -11,3 +11,11 @@ hm:
       - /search/**
       - /users/login
       - /items/**
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: search-service
+          uri: lb://search-service
+          predicates:
+            - Path=/search/**

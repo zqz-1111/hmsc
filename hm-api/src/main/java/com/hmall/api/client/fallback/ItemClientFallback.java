@@ -17,6 +17,12 @@ public class ItemClientFallback implements FallbackFactory<ItemClient> {
     public ItemClient create(Throwable cause) {
         return new ItemClient() {
             @Override
+            public ItemDTO queryItemById(Long id) {
+                log.error("远程调用ItemClient#queryItemById方法出现异常，参数：{}", id, cause);
+                return null;
+            }
+
+            @Override
             public List<ItemDTO> queryItemByIds(Collection<Long> ids) {
                 log.error("远程调用ItemClient#queryItemByIds方法出现异常，参数：{}", ids, cause);
                 // 查询购物车允许失败，查询失败，返回空集合

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: search-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.188.130:8848
+      config:
+        file-extension: yaml
+        shared-configs:
+          - dataId: shared-log.yaml
+          - dataId: shared-swagger.yaml
+          - dataId: shared-mq.yaml
