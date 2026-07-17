@@ -37,6 +37,9 @@ public class ItemDoc implements Serializable {
     @ApiModelProperty("评论数")
     private Integer commentCount;
 
+    @ApiModelProperty("商品状态，1=上架，2=下架，3=删除")
+    private Integer status;
+
     @ApiModelProperty("是否是推广广告，true/false")
     private Boolean isAD;
 

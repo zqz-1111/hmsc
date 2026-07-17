@@ -62,6 +62,9 @@ public class IndexTest {
             "      \"commentCount\":{\n" +
             "        \"type\": \"integer\"\n" +
             "      },\n" +
+            "      \"status\":{\n" +
+            "        \"type\": \"integer\"\n" +
+            "      },\n" +
             "      \"isAD\":{\n" +
             "        \"type\": \"boolean\"\n" +
             "      },\n" +

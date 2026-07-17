@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8083
 hm:
   swagger:
     title: 搜索服务接口文档
